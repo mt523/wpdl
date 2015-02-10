@@ -1,0 +1,18 @@
+#!/bin/bash
+
+dest="/home/michael/Pictures/wallpapers"
+curl -s 'http://www.reddit.com/r/wallpapers' \
+	| tee "$dest/$$.tmp" \
+	| tr '<' '\n' \
+	| grep '^a class="title may-blank*' \
+	| sed 's/.*href="//' \
+	| grep '.png\|.jpg' \
+	| sed 's/\.png.*/\.png/' \
+	| sed 's/\.jpg.*/\.jpg/' \
+	| xargs wget -q -nc -P $dest
+cat $dest/$$.tmp  \
+	| tr '"' '\n' \
+	| grep imgur  \
+	| egrep '^http://imgur.com/a/' \
+	| xargs -l1 ./imgur_album_download.sh
+rm $dest/$$.tmp
