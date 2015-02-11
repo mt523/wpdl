@@ -2,8 +2,8 @@
 
 dest="/home/michael/Pictures/wallpapers"
 before=$(ls $dest | wc -l)
-curl -s 'http://www.reddit.com/r/wallpapers/top?sort=top&t=month&count=25&after=t3_2s3lzl' \
-	| tee "$dest/$$.tmp" \
+curl -s 'http://www.reddit.com/r/wallpapers' \
+	| tee "$dest/curl.tmp" \
 	| tr '<' '\n' \
 	| grep '^a class="title may-blank*' \
 	| sed 's/.*href="//' \
@@ -11,12 +11,12 @@ curl -s 'http://www.reddit.com/r/wallpapers/top?sort=top&t=month&count=25&after=
 	| sed 's/\.png.*/\.png/' \
 	| sed 's/\.jpg.*/\.jpg/' \
 	| xargs wget -q -nc -P $dest
-cat $dest/$$.tmp  \
+cat $dest/curl.tmp  \
 	| tr '"' '\n' \
 	| grep imgur  \
 	| egrep '^http://imgur.com/a/' \
 	| xargs -l1 ./imgur_album_download.sh
-rm $dest/$$.tmp
+rm $dest/curl.tmp
 after=$(ls $dest | wc -l)
 date >> $dest/wpdl.log
 echo '   Addded' $(expr $after - $before) >> $dest/wpdl.log
